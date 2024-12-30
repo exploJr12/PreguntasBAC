@@ -29,11 +29,6 @@
                 <td>@Html.DisplayFor(modelItem => item.FechaCreacion)</td>
                 <td>@Html.DisplayFor(modelItem => item.Pregunta.Contenido)</td>
                 <td>@Html.DisplayFor(modelItem => item.Usuario.Nombre)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.IdRespuesta" class="btn btn-primary btn-sm">Editar</a>
-                    <a asp-action="Details" asp-route-id="@item.IdRespuesta" class="btn btn-info btn-sm">Detalles</a>
-                    <a asp-action="Delete" asp-route-id="@item.IdRespuesta" class="btn btn-danger btn-sm">Eliminar</a>
-                </td>
             </tr>
         }
     </tbody>
