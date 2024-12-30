@@ -1,0 +1,63 @@
+﻿@model Preguntas.Models.Usuario
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Iniciar Sesión</h1>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Login">
+            @Html.AntiForgeryToken() <!-- Protección CSRF -->
+
+            <input type="hidden" name="pReturnUrl" value="@ViewBag.Url" />
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Nombre" class="control-label" aria-labelledby="NombreLabel"></label>
+                    <input asp-for="Nombre" class="form-control" id="Nombre" aria-describedby="NombreHelp" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <small id="NombreHelp" class="form-text text-muted">Ingresa tu nombre de usuario.</small>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Contraseña" class="control-label" aria-labelledby="ContraseñaLabel"></label>
+                    <div class="input-group">
+                        <input asp-for="Contraseña" class="form-control" type="password" id="PasswordField" aria-describedby="PasswordHelp" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">Mostrar</button>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Contraseña" class="text-danger"></span>
+                    <small id="PasswordHelp" class="form-text text-muted">Ingresa tu contraseña.</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Iniciar sesión" class="btn btn-primary" />
+            </div>
+
+            <span class="text-danger">@ViewBag.Error</span>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+};
+
+<script>
+    // Función para mostrar u ocultar la contraseña
+    function togglePassword() {
+        var passwordField = document.getElementById('PasswordField');
+        var button = event.currentTarget;
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            button.innerText = 'Ocultar';
+        } else {
+            passwordField.type = 'password';
+            button.innerText = 'Mostrar';
+        }
+    }
+</script>

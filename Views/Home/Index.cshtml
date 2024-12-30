@@ -1,0 +1,73 @@
+﻿@* @using Azure.Core
+@model IEnumerable<Preguntas.Models.Pregunta>
+
+@{
+    ViewData["Title"] = "Preguntas";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<!-- Filtros para las preguntas -->
+<div>
+    <form method="get" action="@Url.Action("Index", "Preguntas")">
+        <div>
+            <label for="orden">Ordenar por:</label>
+            <select name="orden" id="orden" onchange="this.form.submit()">
+                <option value="asc" @if(Request.Query["orden"] == "asc") { <text>selected</text> }>Ascendente</option>
+                <option value="desc" @if(Request.Query["orden"] == "desc") { <text>selected</text> }>Descendente</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="contenido">Contenido:</label>
+            <input type="text" name="contenido" id="contenido" value="@Request.Query["contenido"]" placeholder="Filtrar por contenido" onchange="this.form.submit()" />
+        </div>
+
+        <div>
+            <label for="usuario">Usuario:</label>
+            <input type="text" name="usuario" id="usuario" value="@Request.Query["usuario"]" placeholder="Filtrar por usuario" onchange="this.form.submit()" />
+        </div>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Contenido</th>
+            <th>Fecha de Creación</th>
+            <th>Usuario</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pregunta in (Request.Query["orden"] == "desc" 
+                ? Model.OrderByDescending(p => p.FechaCreacion) 
+                : Model.OrderBy(p => p.FechaCreacion))
+                .Where(p => string.IsNullOrEmpty(Request.Query["contenido"]) || p.Contenido.Contains(Request.Query["contenido"].ToString()))
+                .Where(p => string.IsNullOrEmpty(Request.Query["usuario"]) || p.Usuario?.Nombre.Contains(Request.Query["usuario"].ToString()))
+                .ToList())
+        {
+            <tr>
+                <td>@pregunta.Contenido</td>
+                <td>@pregunta.FechaCreacion.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@pregunta.Usuario?.Nombre</td>
+                <td>
+                    <!-- Acciones dependiendo del usuario que creó la pregunta -->
+                    @if (pregunta.UsuarioId.ToString() == User.Identity.Name) ;  <!-- Verifica si el usuario actual es el que creó la pregunta -->
+                    {
+                        <a href="@Url.Action("Edit", "Preguntas", new { id = pregunta.IdPregunta })" class="btn btn-primary">Modificar</a>
+                        <form method="post" action="@Url.Action("CerrarPregunta", "Preguntas", new { id = pregunta.IdPregunta })" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger">Cerrar</button>
+                        </form>
+                    }
+                    <a href="@Url.Action("Create", "Respuestas", new { preguntaId = pregunta.IdPregunta })" class="btn btn-info">Responder</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Enlace para crear una nueva pregunta -->
+<a href="@Url.Action("Create", "Preguntas")" class="btn btn-success">Crear Pregunta</a>
+ *@
